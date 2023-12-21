@@ -12,6 +12,7 @@ import numpy as np
 # Find the maximum number of each color for each game
 
 running_index_sum = 0
+running_power_sum = 0
 max_red = 12
 max_green = 13
 max_blue = 14
@@ -53,5 +54,7 @@ with open('input', 'r') as f:
         # Then the game is invalid and we don't add the index to the sum
         if max(reds) <= max_red and max(greens) <= max_green and max(blues) <= max_blue:
             running_index_sum += game
+        running_power_sum += max(reds) * max(greens) * max(blues)
 
-print(running_index_sum)
+print(f"Sum of indices of valid games: {running_index_sum}")
+print(f"Sum of power of all games: {running_power_sum}")
