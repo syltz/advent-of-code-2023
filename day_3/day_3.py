@@ -89,4 +89,91 @@ for i in range(1, len(lines)-1):
         if is_part_number(num, line, line_above=lines[i-1].strip(), line_below=lines[i+1].strip()):
             part_num_sum += int(line[num[0]:num[1]+1])
 
-print(part_num_sum)
+print(f"Part number sum: {part_num_sum}")
+
+# 
+def find_asterisk(line):
+    ''' Find all the asterisks in a string and return the indices of them
+        param: line - the string to search for asterisks
+        return: a list of indices of asterisks
+    '''
+    asterisk_indices = []
+    for i,char in enumerate(line):
+        if char == "*":
+            asterisk_indices.append(i)
+    return asterisk_indices
+
+def get_number_indices(num_ranges):
+    ''' Unpack the number ranges into a list of indices
+        param: num_ranges - a list of tuples containing the start and end index of each number
+        return: a list of indices of numbers
+    '''
+    num_indices = []
+    for num_range in num_ranges:
+        for i in range(num_range[0], num_range[1]+1):
+            num_indices.append(i)
+    return num_indices
+
+def num_numbers_surrounded(asterisk_idx, line, line_above=None, line_below=None):
+    ''' Check how many numbers surround the asterisk
+        param: asterisk_idx - index of the asterisk
+        param: line - the string to search for numbers
+        param: line_above - the string above the line to search for numbers
+        param: line_below - the string below the line to search for numbers
+        return: the number of numbers surrounding the asterisk, and the numbers themselves
+    '''
+    if line_above == None:
+        line_above = ["."] * len(line)
+    if line_below == None:
+        line_below = ["."] * len(line)
+    num_surrounding = 0
+    surrounding_numbers = []
+    # Being by checking the same line as the asterisk
+    num_tuples = find_numbers(line)
+    for num in num_tuples:
+        if asterisk_idx -1 == num[1] or asterisk_idx +1 == num[0]:
+            num_surrounding += 1
+            surrounding_numbers.append(int(line[num[0]:num[1]+1]))
+    # Check the line above
+    num_tuples = find_numbers(line_above)
+    for num in num_tuples:
+        num_range = range(num[0], num[1]+1)
+        hit_range = range(asterisk_idx-1, asterisk_idx+2)
+        if any(num in hit_range for num in num_range):
+            num_surrounding += 1
+            surrounding_numbers.append(int(line_above[num[0]:num[1]+1]))
+    # Check the line below
+    num_tuples = find_numbers(line_below)
+    for num in num_tuples:
+        num_range = range(num[0], num[1]+1)
+        hit_range = range(asterisk_idx-1, asterisk_idx+2)
+        if any(num in hit_range for num in num_range):
+            num_surrounding += 1
+            surrounding_numbers.append(int(line_below[num[0]:num[1]+1]))
+    return num_surrounding, surrounding_numbers
+
+# First treat the first and last lines as special cases
+line = lines[0].strip()
+asterisks = find_asterisk(line)
+gear_ratio_sum = 0
+for asterisk in asterisks:
+    num_surrounding, surrounding_numbers = num_numbers_surrounded(asterisk, line, line_below=lines[1].strip())
+    if num_surrounding == 2:
+        gear_ratio_sum += surrounding_numbers[0] * surrounding_numbers[1]
+line = lines[-1].strip()
+asterisks = find_asterisk(line)
+for asterisk in asterisks:
+    num_surrounding, surrounding_numbers = num_numbers_surrounded(asterisk, line, line_above=lines[-2].strip())
+    if num_surrounding == 2:
+        gear_ratio_sum += surrounding_numbers[0] * surrounding_numbers[1]
+
+# Now do the rest of the lines
+for i in range(1, len(lines)-1):
+    line = lines[i].strip()
+    asterisks = find_asterisk(line)
+    for asterisk in asterisks:
+        num_surrounding, surrounding_numbers = num_numbers_surrounded(asterisk, line, line_above=lines[i-1].strip(), line_below=lines[i+1].strip())
+        if num_surrounding == 2:
+            gear_ratio_sum += surrounding_numbers[0] * surrounding_numbers[1]
+
+print(f"Gear ratio sum: {gear_ratio_sum}")
