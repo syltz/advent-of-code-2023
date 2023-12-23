@@ -30,11 +30,23 @@ for i, t, d in zip(indices, times, distances):
 print(f"Part one number of ways to win: {np.prod(ways_to_win_list)}")
 
 
+
+#ways_to_win = 0
+#for tprime in range(1, time_p2):
+#    if tprime * (time_p2-tprime) > distance_p2:
+#        ways_to_win += 1
+#print(f"Part two number of ways to win: {ways_to_win}")
+
+# Testing case 2 new algorithm
+
 print(f"Time for part two: {time_p2}")
 print(f"Distance for part two: {distance_p2}")
 
-ways_to_win = 0
-for tprime in range(1, time_p2):
-    if tprime * (time_p2-tprime) > distance_p2:
-        ways_to_win += 1
+import time
+start_time_1 = time.time()
+speeds = np.arange(time_p2/2) 
+times = np.ones_like(speeds) * time_p2 - speeds
+distances = speeds * times
+ways_to_win = 2*np.sum(distances > distance_p2)
 print(f"Part two number of ways to win: {ways_to_win}")
+print(f"Time for part two: {time.time() - start_time_1}")
